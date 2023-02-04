@@ -74,7 +74,7 @@ router.get("/:id", async (req, res) => {
     } else {
         res.json({
             status: 200,
-            messages: "berhasil cok",
+            messages: "berhasil cuy",
             data: klub,
         });
     }
