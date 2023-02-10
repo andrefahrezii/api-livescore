@@ -5,10 +5,11 @@ const v = new Validator({
     useNewCustomCheckerFunction: true, // using new version
     messages: {
         // Register our new error message text
-        unique: "The username is already exist"
+        unique: "The data is already exist"
     }
 });
 const { Pertandingan } = require("../models");
+const { Livescore } = require("../models");
 
 
 router.post("/", async (req, res) => {
@@ -21,9 +22,9 @@ router.post("/", async (req, res) => {
     //validation
     const schema = {
         klubA: "string|unique",
-        scoreA: "string",
+        scoreA: "number",
         klubB: "string|unique",
-        scoreB: "string"
+        scoreB: "number"
     }
 
     const validate = v.validate(req.body, schema);
@@ -33,16 +34,62 @@ router.post("/", async (req, res) => {
             .status(400)
             .json(validate);
     }
+    Pertandingan.findOne({
+        where: {
+            klubA: req.body.klubA,
+            klubB: req.body.klubA
+        }
+    }).then(klub => {
+        if (klub) {
+            res.status(400).send({
+                klubA: req.body.klubA,
+                message: "Error",
+                errors: "klubA is already taken!"
+            });
+            return;
+        }
+    })
+    Pertandingan.findOne({
+        where: {
+            klubB: req.body.klubB,
+            klubA: req.body.klubB
+        }
+    }).then(klub => {
+        if (klub) {
+            res.status(400).send({
+                klubB: req.body.klubB,
+                message: "Error",
+                errors: "klubB is already taken!"
+            });
+            return;
+        }
+    })
+    Pertandingan.findOne({
+        where: {
+            klubB: req.body.klubB
+        }
+    }).then(klub => {
+        if (klub) {
+            res.status(400).send({
+                klubB: req.body.klubB,
+                message: "Error",
+                errors: "klubB is already taken!"
+            });
+            return;
+        }
+    })
     //
 
     // res.send("berhasil cuy");
 
     const send = await Pertandingan.create(req.body)
 
+
     res.json({
         status: 200,
         messages: "berhasil cuy",
         data: send,
+
     });
 
 });
@@ -79,6 +126,7 @@ router.put("/:id", async (req, res) => {
                 message: "data tidak ada cuyy"
             });
     }
+
     //validasi
     const schema = {
         klubA: "string",
@@ -87,18 +135,25 @@ router.put("/:id", async (req, res) => {
         scoreB: "string"
     }
 
+
     const validate = v.validate(req.body, schema)
     if (validate.length) {
         return res
             .status(400)
             .json(validate);
     }
+
+    console.log(pertandingan)
+
+
     // proses update
     pertandingan = await pertandingan.update(req.body);
+
     res.json({
         status: 200,
         messages: "berhasil cuy",
         data: pertandingan,
+
     });
 });
 

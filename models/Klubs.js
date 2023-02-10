@@ -11,10 +11,13 @@ module.exports = (sequelize, DataTypes) => {
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: { notEmpty: true, },
+                unique: { args: true, msg: "Email already exists" },
             },
             kota: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                unique: true
             },
             createdAt: {
                 type: DataTypes.DATE,
@@ -28,6 +31,9 @@ module.exports = (sequelize, DataTypes) => {
 
         }, {
         tableName: "klub"
-    });
+    }, {});
+
+
     return Klubs;
 };
+

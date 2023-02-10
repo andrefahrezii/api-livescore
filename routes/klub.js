@@ -26,6 +26,20 @@ router.post("/", async (req, res) => {
             .json(validate);
     }
     //
+    Klubs.findOne({
+        where: {
+            name: req.body.name
+        }
+    }).then(klub => {
+        if (klub) {
+            res.status(422).send({
+                name: req.body.name,
+                message: "Error",
+                errors: "klub is already taken!"
+            });
+            return;
+        }
+    })
 
     // res.send("berhasil cuy");
 
